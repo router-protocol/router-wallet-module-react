@@ -1,10 +1,9 @@
 
 # Wallet Module
 
-This module helps in getting a quick wallet instance which can help user's connect wallet and interact with EVM chains, near chain and router chain.
+This module helps in getting a wallet instance with which user's can connect wallet and interact with EVM chains, router chain and near chain.
 
-Goal to create this was to have all kinds of wallet integrated at one place and dapp creater can just plugin in this wallet module and get started with signing and broadcating transactions to the chains integrated to Router Chain. 
-
+Goal to create this was to have all kinds of wallet integrated at one place and router chain's dapp creators can just plugin in this wallet module and get started with signing and broadcating transactions to the chains integrated to Router Chain. 
 
 ## Installation
 
