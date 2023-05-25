@@ -18,7 +18,7 @@ const Wrapper = styled.div`
   height: 100vh;
   width: 100vw;
   background-color: #161622;
-  display: inline-block;
+  overflow: auto;
 `;
 
 const Header = styled.div`
@@ -31,8 +31,7 @@ const Header = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
-  height: 100%;
-  max-height: 100vh;
+  height: 100vh;
   display: grid;
   place-items: center;
 `;
