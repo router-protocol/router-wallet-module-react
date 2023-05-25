@@ -94,7 +94,7 @@ const AccountInfo = ({ action, close }: Props) => {
     navigator.clipboard.writeText(accountAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 4000);
-  }, [setCopied]);
+  }, [setCopied, accountAddress]);
 
   return (
     <AccountInfoContainer>

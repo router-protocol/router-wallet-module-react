@@ -79,7 +79,7 @@ const HomePage = (props: Props) => {
       data: getDataRaw(accountAddress),
     });
     console.log("txRespone evm =>", txRespone);
-  }, [isWalletConnected, walletId, networkId]);
+  }, [isWalletConnected, walletId, networkId, accountAddress]);
 
   const handleRouterTx = useCallback(async () => {
     if (!isWalletConnected) {
@@ -91,10 +91,10 @@ const HomePage = (props: Props) => {
       return;
     }
     if (networkId !== "9601") {
-       await window.walletClient.switchChain({
-         id: 9601,
-       });
-       return;
+      await window.walletClient.switchChain({
+        id: 9601,
+      });
+      return;
     }
     const txResponse = await handleSendTransaction({
       routerNetworkEnv: "testnet",
@@ -106,7 +106,7 @@ const HomePage = (props: Props) => {
       routerNodeUrl: ROUTER_LCD,
     });
     console.log("txResponse router=>", txResponse);
-  }, [isWalletConnected, walletId, networkId]);
+  }, [isWalletConnected, walletId, networkId, accountAddress]);
 
   const handleNearTx = useCallback(async() => {
     if (!isWalletConnected) {

@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 const intialWalletId =
   typeof window !== "undefined"
     ? localStorage.getItem("walletId")
       ? JSON.parse(localStorage.getItem("walletId") || "{}")
       : ""
     : "";
-export const getWalletStates = () => {
+export const useWalletStates = () => {
   const [accountAddress, setAccountAddress] = useState("");
   const [networkId, setNetworkId] = useState("");
   const [isWalletConnected, setIsWalletConnected] = useState(false);
