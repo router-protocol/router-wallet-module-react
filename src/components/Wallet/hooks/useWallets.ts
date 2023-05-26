@@ -95,6 +95,8 @@ export const useWallets = () => {
         }
         setAccountAddress("");
         setNetworkId("");
+        setWalletId("");
+        setChainType("");
         setIsWalletConnected(false);
       } catch (e) {
         console.log("handleDisconnect erorr =>", e);
