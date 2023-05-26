@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useAccountAddress,
   useWalletConnected,
+  useWalletId,
+  useWallets,
 } from "./hooks";
 import MenuWrapper from "./ModalWrapper";
 import AccountInfo from "./AccountInfo";
 import WalletList from "./WalletList";
 import { shortenAddress } from "./configs/utils";
 import styled from "styled-components";
+import { walletConfigs } from "./configs/ProviderConfig";
 
 type Props = {};
 
@@ -32,6 +35,15 @@ const WalletComponent = ({}: Props) => {
   const [accountAddress] = useAccountAddress();
   const [showWalletList, setShowWalletList] = useState(false);
   const [showAccountInfo, setShowAccountInfo] = useState(false);
+  const [walletId] = useWalletId();
+  const { handleConnect } = useWallets();
+
+  // This useEffect is for intial connection of last wallet connected
+  useEffect(() => {
+    if (!walletId) return;
+    handleConnect(walletConfigs.filter((wallet) => wallet.id === walletId)[0]);
+  }, []);
+  
   return (
     <>
       <MenuWrapper

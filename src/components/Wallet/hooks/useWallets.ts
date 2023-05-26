@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import {
   useAccountAddress,
   useChainType,
@@ -196,12 +196,6 @@ export const useWallets = () => {
     },
     [accountAddress, chainType]
   );
-
-  useEffect(() => {
-    console.log("walletId =>", walletId);
-    if (!walletId) return;
-    handleConnect(walletConfigs.filter((wallet) => wallet.id === walletId)[0]);
-  }, []);
 
   return { handleConnect, handleDisconnect, handleSendTransaction };
 };
