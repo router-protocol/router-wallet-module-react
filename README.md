@@ -46,6 +46,7 @@ Note : For installing *@routerprotocol/router-chain-sdk-ts* refer to it's instal
         data: RAW_TX_DATA,
         });
     ```
+      Or you can use *window.walletClient* which is a wallet signer having all the Ethereum JSON-RPC API's for injected wallets.
     b. For Router chain - 
     ```JS
     const txResponse = await handleSendTransaction({
