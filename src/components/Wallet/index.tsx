@@ -16,6 +16,7 @@ declare global {
     walletClient: any;
     ethereum: any;
     frontier: any;
+    cosmostation: any;
   }
 }
 

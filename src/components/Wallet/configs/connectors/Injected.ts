@@ -8,6 +8,9 @@ const GetInjectedProviders = () => {
     if (window.frontier) {
       return window.frontier.ethereum;
     }
+    if (window.cosmostation) {
+      return window.cosmostation.ethereum;
+    }
     return undefined;
   }
   return undefined;
