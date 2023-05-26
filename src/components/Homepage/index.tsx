@@ -4,6 +4,7 @@ import { ROUTER_LCD } from "@/utils/constants";
 import React, { useCallback } from "react";
 import styled from "styled-components";
 import WalletComponent from "../Wallet";
+import { switchNetworkInMetamask } from "../Wallet/configs/utils";
 import {
   useAccountAddress,
   useNetworkId,
@@ -90,9 +91,7 @@ const HomePage = (props: Props) => {
       return;
     }
     if (networkId !== "9601") {
-      await window.walletClient.switchChain({
-        id: 9601,
-      });
+      await switchNetworkInMetamask()
       return;
     }
     const txResponse = await handleSendTransaction({
