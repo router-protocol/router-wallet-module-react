@@ -1,5 +1,10 @@
 import Web3 from "web3";
-import { DEFAULT_GAS_LIMIT, DEFAULT_GAS_PRICE } from "./constants";
+import {
+  DEFAULT_GAS_LIMIT,
+  DEFAULT_GAS_PRICE,
+  PING_PONG_ADDRESS,
+  ROUTER_COSMOS_CHAIN_ID,
+} from "./constants";
 const ethers = require("ethers");
 
 function getRequestMetadata(
@@ -151,8 +156,8 @@ export const getDataRaw = (accountAddress: string) =>
       ],
     },
     [
-      "router_9601-1",
-      "router1703xucyw0nv2yfs6d082x4crapjly9utn0w2cy42rpcdez3t9dusp287ky",
+      ROUTER_COSMOS_CHAIN_ID,
+      PING_PONG_ADDRESS[ROUTER_COSMOS_CHAIN_ID],
       `Hello, Mumbai From Wallet Module by ${accountAddress}`,
       requestMetadata,
     ]
@@ -161,7 +166,7 @@ export const getDataRaw = (accountAddress: string) =>
 export const getRouterExecutionArgs = (accountAddress: string) => {
   return {
     ping: `Hello, Router From Wallet Module by ${accountAddress}`,
-    dest_contract_address: "0x862f75cB828B21c9A2F406EEb7F5263C1E012700",
+    dest_contract_address: PING_PONG_ADDRESS["80001"],
     dest_chain_id: "80001",
     request_metadata: getRequestMetadataBase64(
       DEFAULT_GAS_LIMIT,
@@ -180,8 +185,7 @@ export const getRouterExecutionArgs = (accountAddress: string) => {
 export const getNearExecutionArgs = (accountAddress: string) => {
   return {
     dest_chain_id: "router_9601-1",
-    destination_contract_address:
-      "router1703xucyw0nv2yfs6d082x4crapjly9utn0w2cy42rpcdez3t9dusp287ky",
+    destination_contract_address: PING_PONG_ADDRESS[ROUTER_COSMOS_CHAIN_ID],
     str: `Hello, Router From Wallet Module by ${accountAddress}`,
     request_metadata: getRequestMetadataArray(
       DEFAULT_GAS_LIMIT,

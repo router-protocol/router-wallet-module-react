@@ -24,7 +24,6 @@ import {
   subscribeInjectedWallet,
 } from "../configs/utils";
 import { nearNetworkConfig } from "../configs/nearConfig";
-import { walletConfigs } from "../configs/ProviderConfig";
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
