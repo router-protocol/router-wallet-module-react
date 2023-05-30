@@ -29,3 +29,22 @@ export const switchNetworkInMetamask = async (
     }
   }
 };
+
+export const checkIfRouterChainId = (chainId: string) => {
+  switch (chainId) {
+    case "9600":
+      return true;
+    case "9601":
+      return true;
+    case "9602":
+      return true;
+    case "9603":
+      return true;
+    case "9604":
+      return true;
+    case "9605":
+      return true;
+    default:
+      return false;
+  }
+};

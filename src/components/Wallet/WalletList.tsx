@@ -40,11 +40,11 @@ const Title = styled.div`
 `;
 
 const WalletListWrapper = styled.div`
-    overflow: hidden;
-    width: 100%;
-    overflow-y: scroll;
-    margin-top: 1rem;
-    padding: 0 20px;
+  overflow: hidden;
+  width: 100%;
+  overflow-y: scroll;
+  margin-top: 1rem;
+  padding: 0 20px;
 `;
 
 const WalletItem = styled.div`
@@ -96,7 +96,13 @@ const WalletList = ({ close }: Props) => {
       <Title>Connect To</Title>
       <WalletListWrapper>
         {walletConfigs.map((wallet, index) => (
-          <WalletItem key={index} onClick={() => handleConnect(wallet)}>
+          <WalletItem
+            key={index}
+            onClick={() => {
+              handleConnect(wallet);
+              close();
+            }}
+          >
             <WalletName>
               <StatusDot active={walletId === wallet.id} />
               {wallet.name}

@@ -1,3 +1,4 @@
+import { checkIfRouterChainId } from ".";
 import { CustomChainType, WalletId, WalletType } from "../../types";
 
 export const handleInjectedConnection = async (wallet: WalletType) => {
@@ -9,7 +10,7 @@ export const handleInjectedConnection = async (wallet: WalletType) => {
     const _address = (await _walletClient.getAddresses())[0];
     const _chainId = await _walletClient.getChainId();
     let _chainType = CustomChainType.ethereum;
-    if (_chainId.toString().includes("96")) {
+    if (checkIfRouterChainId(_chainId.toString())) {
       _chainType = CustomChainType.router;
     }
     return {
