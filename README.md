@@ -80,6 +80,8 @@ Note : For installing *@routerprotocol/router-chain-sdk-ts* refer to it's instal
           gas: GAS,
           deposit: DEPOSIT,
         });
+    
+     Ex - 
         const txRespone = await handleSendTransaction({
           methodName: "i_ping",
           args: {
