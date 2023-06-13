@@ -47,6 +47,7 @@ Note : For installing *@routerprotocol/router-chain-sdk-ts* refer to it's instal
         });
     ```
       Or you can use *window.walletClient* which is a wallet signer having all the Ethereum JSON-RPC API's for injected wallets.
+
     b. For Router chain - 
     ```JS
     const txResponse = await handleSendTransaction({
@@ -70,12 +71,25 @@ Note : For installing *@routerprotocol/router-chain-sdk-ts* refer to it's instal
             routerNodeUrl: "https://lcd.testnet.routerchain.dev/",
         });
     ```
-    c. For EVM chains - 
+    c. For Near - 
+    First in **nearConfig.ts** file change *contractId* to what ever contract address you are interacting with.
     ```JS
         const txRespone = await handleSendTransaction({
-        from: SENDER_ADDRESS,
-        to: RECEIVER_ADDRESS,
-        value: ETH_TO_SEND,
-        data: RAW_TX_DATA,
+          methodName: METHOD_NAME,
+          args: METHOD_ARGS,
+          gas: GAS,
+          deposit: DEPOSIT,
+        });
+        const txRespone = await handleSendTransaction({
+          methodName: "i_ping",
+          args: {
+            dest_chain_id: "80001",
+            destination_contract_address: "0xee",
+            str: "Hii",
+            request_metadata: "0xee",
+            recipient: "0x79178a55716e43c46387D247191b820f8e635615",
+          },
+          gas: "30000000000000",
+          deposit: "10000000000000000000000",
         });
     ```

@@ -1,6 +1,6 @@
 "use client";
 import { getDataRaw, getNearExecutionArgs, getRouterExecutionArgs } from "@/utils";
-import { ROUTER_LCD } from "@/utils/constants";
+import { PING_PONG_ADDRESS, ROUTER_COSMOS_CHAIN_ID, ROUTER_ETH_CHAIN_ID, ROUTER_LCD } from "@/utils/constants";
 import React, { useCallback } from "react";
 import styled from "styled-components";
 import WalletComponent from "../Wallet";
@@ -90,14 +90,13 @@ const HomePage = (props: Props) => {
       alert("Connect to EVM wallet");
       return;
     }
-    if (networkId !== "9601") {
-      await switchNetworkInMetamask()
+    if (networkId !== ROUTER_ETH_CHAIN_ID.toString()) {
+      await switchNetworkInMetamask();
       return;
     }
     const txResponse = await handleSendTransaction({
       routerNetworkEnv: "testnet",
-      routerContractAddress:
-        "router1703xucyw0nv2yfs6d082x4crapjly9utn0w2cy42rpcdez3t9dusp287ky",
+      routerContractAddress: PING_PONG_ADDRESS[ROUTER_COSMOS_CHAIN_ID],
       routerExecuteMsg: {
         i_ping: getRouterExecutionArgs(accountAddress),
       },
