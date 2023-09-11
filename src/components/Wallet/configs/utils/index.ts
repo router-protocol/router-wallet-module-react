@@ -1,3 +1,4 @@
+import { WalletId } from "../../types";
 import { CURRENT_NETWORK_METAMASK_CONFIG } from "../constants";
 
 export * from "./injected";
@@ -10,16 +11,29 @@ export function shortenAddress(address: string, chars = 8): string {
 }
 
 export const switchNetworkInMetamask = async (
+  walletId: string,
   config = CURRENT_NETWORK_METAMASK_CONFIG
 ) => {
   try {
-    if (window.ethereum) {
+    if (walletId === WalletId.injected || walletId === WalletId.walletconnect) {
       console.log("CALLED");
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [config],
-      });
+      if (
+        config.chainId.toLowerCase() === "0x2A".toLowerCase() ||
+        config.chainId.toLowerCase() === "0x3".toLowerCase()
+      ) {
+        await window.walletClient.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "" }],
+        });
+      } else {
+        await window.walletClient.request({
+          method: "wallet_addEthereumChain",
+          params: [config],
+        });
+      }
+      return true;
     }
+    return false;
   } catch (e: any) {
     if (e.code === 4001) {
       // EIP-1193 userRejectedRequest error
@@ -27,6 +41,7 @@ export const switchNetworkInMetamask = async (
     } else {
       console.error(e);
     }
+    return false;
   }
 };
 
