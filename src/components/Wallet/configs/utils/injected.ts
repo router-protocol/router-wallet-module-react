@@ -1,5 +1,6 @@
 import { checkIfRouterChainId } from ".";
 import { CustomChainType, WalletId, WalletType } from "../../types";
+import { adapter } from "./tron";
 
 export const handleInjectedConnection = async (wallet: WalletType) => {
   try {
@@ -54,5 +55,23 @@ export const subscribeInjectedWallet = ({
         }
       }
     });
+  }
+  if(id === WalletId.tron) {
+    adapter.on('connect', () => {
+      console.log(`TRON address ${adapter.address}`)
+      setAccountAddress(adapter.address!)
+    })
+    adapter.on("accountsChanged", () => {
+      if(adapter.address) {
+        console.log(`TRON account changed ${adapter.address}`)
+        setAccountAddress(adapter.address!)
+      }
+    })
+    adapter.on('chainChanged', async () => {
+      const network = await adapter.network()
+      setNetworkId(network.chainId)
+      setChainType(CustomChainType.tron)
+      console.log(`TRON chain changed ${network.chainId}`)
+    })
   }
 };

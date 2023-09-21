@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   useAccountAddress,
   useChainType,
@@ -12,8 +12,10 @@ import {
   isEthereumSendTransactionArgs,
   isNearExecutionType,
   isRouterExecutionType,
+  isTronExecutionType,
   NearExecutionType,
   RouterExecutionType,
+  TronExecutionType,
   WalletId,
   WalletType,
 } from "../types";
@@ -24,6 +26,9 @@ import {
   subscribeInjectedWallet,
 } from "../configs/utils";
 import { nearNetworkConfig } from "../configs/nearConfig";
+import { adapter, handleTronConnection } from "../configs/utils/tron";
+//@ts-ignore
+import TronWeb from 'tronweb';
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -31,6 +36,7 @@ export const useWallets = () => {
   const [, setNetworkId] = useNetworkId();
   const [chainType, setChainType] = useChainType();
   const [walletId, setWalletId] = useWalletId();
+  const [tronWeb, setTronWeb] = useState<TronWeb>();
   const handleConnect = useCallback(
     async (wallet: WalletType) => {
       let connectionResponse;
@@ -56,6 +62,15 @@ export const useWallets = () => {
         case WalletId.near:
           connectionResponse = await handleNearConnection({
             contractId: nearNetworkConfig.contractId,
+          });
+          break;
+        case WalletId.tron: 
+          connectionResponse = await handleTronConnection(wallet)
+          subscribeInjectedWallet({
+            wallet,
+            setAccountAddress,
+            setNetworkId,
+            setChainType,
           });
           break;
       }
@@ -110,6 +125,7 @@ export const useWallets = () => {
         | RouterExecutionType
         | EthereumSendTransactionArgs
         | NearExecutionType
+        | TronExecutionType
     ) => {
       const { walletClient } = window;
       switch (chainType) {
@@ -189,12 +205,37 @@ export const useWallets = () => {
             ],
           });
           return nearTxResponse;
+        case CustomChainType.tron:
+          if(!isTronExecutionType(txArgs)) {
+            throw new Error(
+              `Chaintype is tron but transaction argument does not match TronExecutionType`
+            )
+          }
+          const { from, to, amount} = txArgs
+          const transaction = await tronWeb.transactionBuilder.sendTrx(
+            to,
+            tronWeb.toSun(amount),
+            from
+          );
+          const signedTransaction = await adapter.signTransaction(transaction);
+          const tronTxResponse = await tronWeb.trx.sendRawTransaction(signedTransaction);
+          return tronTxResponse
         default:
           throw new Error(`${chainType} chain type is not handeled`);
       }
     },
     [accountAddress, chainType]
   );
+
+  useEffect(() => {
+    if (window.tronWeb?.fullNode.host) {
+      const tronObj = new TronWeb({
+        fullHost: window.tronWeb.fullNode.host,
+      });
+      console.log("Tron object =>", tronObj)
+      setTronWeb(tronObj);
+    }
+  }, [window.tronWeb]);
 
   return { handleConnect, handleDisconnect, handleSendTransaction };
 };

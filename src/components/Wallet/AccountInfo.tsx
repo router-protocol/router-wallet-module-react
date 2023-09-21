@@ -1,5 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useAccountAddress, useWalletId } from "./hooks";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useAccountAddress,
+  useChainType,
+  useNetworkId,
+  useWalletId,
+} from "./hooks";
 import {
   DocumentDuplicateIcon,
   CheckCircleIcon,
@@ -85,6 +90,9 @@ const AccountInfo = ({ action, close }: Props) => {
   const [copied, setCopied] = useState(false);
   const { handleDisconnect } = useWallets();
 
+  const [networkId] = useNetworkId();
+  const [chainType] = useChainType();
+
   const wallet = useMemo(
     () => walletConfigs.filter((wallet) => wallet.id === walletId)[0],
     [walletId]
@@ -101,6 +109,10 @@ const AccountInfo = ({ action, close }: Props) => {
       <CloseIcon onClick={close} />
       <WalletLogo src={wallet?.logoUri} alt="Wallet Logo" />
       <WalletName>{wallet?.name}</WalletName>
+
+      <span>Chain type: {chainType}</span>
+      <span>Connected to network: {networkId}</span>
+
       <AddressWrapper onClick={copyToClipboard}>
         {copied ? "Copied" : accountAddress}
         &nbsp;

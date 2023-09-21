@@ -1,3 +1,5 @@
+//@ts-ignore
+import TronWeb from 'tronweb';
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
@@ -45,6 +47,22 @@ export function isNearExecutionType(obj: any): obj is NearExecutionType {
   );
 }
 
+export interface TronExecutionType {
+  tronWeb?: TronWeb,
+  from: string,
+  to: string,
+  amount: number
+}
+
+export function isTronExecutionType(obj: any): obj is TronExecutionType {
+  return (
+    // typeof obj?.tronWeb === TronWeb &&
+    typeof obj?.from === "string" &&
+    typeof obj?.to === "string" &&
+    typeof obj?.amount === "number"
+  )
+}
+
 // from: DATA, 20 Bytes - The address the transaction is send from.
 // to: DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
 // gas: QUANTITY - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
@@ -78,10 +96,12 @@ export enum WalletId {
   injected = "injected",
   walletconnect = "walletconnect",
   near = "near",
+  tron = "tron",
 }
 
 export enum CustomChainType {
   ethereum = "ethereum",
   near = "near",
   router = "router",
+  tron = "tron",
 }

@@ -25,4 +25,10 @@ export const walletConfigs = [
     // Putting injectedConnector here, but has no significance
     connector: injectedConnector,
   },
+  {
+    id: WalletId.tron,
+    name: "TronLink",
+    logoUri: "/tron_logo.svg",
+    connector: injectedConnector
+  }
 ];
