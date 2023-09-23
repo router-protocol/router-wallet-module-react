@@ -47,7 +47,7 @@ export const subscribeInjectedWallet = ({
       if (chain) {
         console.log(`Chain Changed`);
         setNetworkId(chain.id.toString());
-        if (chain.id.toString().includes("96")) {
+        if (checkIfRouterChainId(chain.id.toString())) {
           setChainType(CustomChainType.router);
         } else {
           setChainType(CustomChainType.ethereum);
