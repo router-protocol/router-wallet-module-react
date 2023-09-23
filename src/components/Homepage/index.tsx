@@ -91,7 +91,7 @@ const HomePage = (props: Props) => {
       return;
     }
     if (networkId !== ROUTER_ETH_CHAIN_ID.toString()) {
-      await switchNetworkInMetamask();
+      await switchNetworkInMetamask(walletId);
       return;
     }
     const txResponse = await handleSendTransaction({

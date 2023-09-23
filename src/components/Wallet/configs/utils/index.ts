@@ -17,20 +17,18 @@ export const switchNetworkInMetamask = async (
   try {
     if (walletId === WalletId.injected || walletId === WalletId.walletconnect) {
       console.log("CALLED");
-      if (
-        config.chainId.toLowerCase() === "0x2A".toLowerCase() ||
-        config.chainId.toLowerCase() === "0x3".toLowerCase()
-      ) {
-        await window.walletClient.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "" }],
-        });
-      } else {
-        await window.walletClient.request({
-          method: "wallet_addEthereumChain",
-          params: [config],
-        });
-      }
+      await window.walletClient.request({
+        method: "wallet_switchEthereumChain",
+        params: [
+          {
+            chainId:
+              config.chainId.toLowerCase() === "0x2A".toLowerCase() ||
+              config.chainId.toLowerCase() === "0x3".toLowerCase()
+                ? ""
+                : config.chainId,
+          },
+        ],
+      });
       return true;
     }
     return false;
@@ -38,6 +36,16 @@ export const switchNetworkInMetamask = async (
     if (e.code === 4001) {
       // EIP-1193 userRejectedRequest error
       console.log("We can encrypt anything without the key.");
+    } else if (e.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [config],
+        });
+      } catch (addError) {
+        // handle "add" error
+        console.error(addError);
+      }
     } else {
       console.error(e);
     }
