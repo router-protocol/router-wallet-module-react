@@ -48,30 +48,29 @@ export const subscribeInjectedWallet = ({
       if (chain) {
         console.log(`Chain Changed`);
         setNetworkId(chain.id.toString());
-        if (chain.id.toString().includes("96")) {
+        if (checkIfRouterChainId(chain.id.toString())) {
           setChainType(CustomChainType.router);
         } else {
           setChainType(CustomChainType.ethereum);
         }
       }
     });
-  }
-  if(id === WalletId.tron) {
-    adapter.on('connect', () => {
-      console.log(`TRON address ${adapter.address}`)
-      setAccountAddress(adapter.address!)
-    })
+  }else if (id === WalletId.tron) {
+    adapter.on("connect", () => {
+      console.log(`TRON address ${adapter.address}`);
+      setAccountAddress(adapter.address!);
+    });
     adapter.on("accountsChanged", () => {
-      if(adapter.address) {
-        console.log(`TRON account changed ${adapter.address}`)
-        setAccountAddress(adapter.address!)
+      if (adapter.address) {
+        console.log(`TRON account changed ${adapter.address}`);
+        setAccountAddress(adapter.address!);
       }
-    })
-    adapter.on('chainChanged', async () => {
-      const network = await adapter.network()
-      setNetworkId(network.chainId)
-      setChainType(CustomChainType.tron)
-      console.log(`TRON chain changed ${network.chainId}`)
-    })
+    });
+    adapter.on("chainChanged", async () => {
+      const network = await adapter.network();
+      setNetworkId(network.chainId);
+      setChainType(CustomChainType.tron);
+      console.log(`TRON chain changed ${network.chainId}`);
+    });
   }
 };
