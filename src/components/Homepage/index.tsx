@@ -147,7 +147,7 @@ const HomePage = (props: Props) => {
       alert("Connect to TronLink");
       return;
     }
-    if (networkId !== "0xcd8690dc") {
+    if (networkId !== "3448148188") {
       alert("Change network to Tron Nile Testnet");
       return;
     }

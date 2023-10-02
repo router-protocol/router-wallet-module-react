@@ -10,8 +10,8 @@ export const handleTronConnection = async (wallet: WalletType) => {
 
     return {
         _address: adapter.address!,
-        _chainId: network.chainId,
-        _walletClient: adapter,
+        _chainId: parseInt(network.chainId, 16).toString(),
+        _walletClient: window.tron?.tronWeb,
         _chainType: CustomChainType.tron,
-    }
+    };
 };

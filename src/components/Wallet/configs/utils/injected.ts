@@ -55,7 +55,7 @@ export const subscribeInjectedWallet = ({
         }
       }
     });
-  }else if (id === WalletId.tron) {
+  } else if (id === WalletId.tron) {
     adapter.on("connect", () => {
       console.log(`TRON address ${adapter.address}`);
       setAccountAddress(adapter.address!);
@@ -68,7 +68,7 @@ export const subscribeInjectedWallet = ({
     });
     adapter.on("chainChanged", async () => {
       const network = await adapter.network();
-      setNetworkId(network.chainId);
+      setNetworkId(parseInt(network.chainId, 16).toString());
       setChainType(CustomChainType.tron);
       console.log(`TRON chain changed ${network.chainId}`);
     });

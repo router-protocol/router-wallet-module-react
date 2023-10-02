@@ -109,10 +109,6 @@ const AccountInfo = ({ action, close }: Props) => {
       <CloseIcon onClick={close} />
       <WalletLogo src={wallet?.logoUri} alt="Wallet Logo" />
       <WalletName>{wallet?.name}</WalletName>
-
-      <span>Chain type: {chainType}</span>
-      <span>Connected to network: {networkId}</span>
-
       <AddressWrapper onClick={copyToClipboard}>
         {copied ? "Copied" : accountAddress}
         &nbsp;

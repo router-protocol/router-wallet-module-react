@@ -64,7 +64,7 @@ export const useWallets = () => {
             contractId: nearNetworkConfig.contractId,
           });
           break;
-        case WalletId.tron: 
+        case WalletId.tron:
           connectionResponse = await handleTronConnection(wallet)
           subscribeInjectedWallet({
             wallet,
@@ -104,6 +104,9 @@ export const useWallets = () => {
           case WalletId.near:
             await walletClient.signOut();
             break;
+          case WalletId.tron:
+            await adapter.disconnect()
+            break
           default:
             await wallet.connector.disconnect();
         }
@@ -206,12 +209,12 @@ export const useWallets = () => {
           });
           return nearTxResponse;
         case CustomChainType.tron:
-          if(!isTronExecutionType(txArgs)) {
+          if (!isTronExecutionType(txArgs)) {
             throw new Error(
               `Chaintype is tron but transaction argument does not match TronExecutionType`
             )
           }
-          const { from, to, amount} = txArgs
+          const { from, to, amount } = txArgs
           const transaction = await tronWeb.transactionBuilder.sendTrx(
             to,
             tronWeb.toSun(amount),
