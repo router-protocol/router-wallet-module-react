@@ -27,8 +27,6 @@ import {
 } from "../configs/utils";
 import { nearNetworkConfig } from "../configs/nearConfig";
 import { adapter, handleTronConnection } from "../configs/utils/tron";
-//@ts-ignore
-import TronWeb from 'tronweb';
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -36,7 +34,6 @@ export const useWallets = () => {
   const [, setNetworkId] = useNetworkId();
   const [chainType, setChainType] = useChainType();
   const [walletId, setWalletId] = useWalletId();
-  const [tronWeb, setTronWeb] = useState<TronWeb>();
   const handleConnect = useCallback(
     async (wallet: WalletType) => {
       let connectionResponse;
@@ -211,34 +208,30 @@ export const useWallets = () => {
         case CustomChainType.tron:
           if (!isTronExecutionType(txArgs)) {
             throw new Error(
-              `Chaintype is tron but transaction argument does not match TronExecutionType`
+              `Chaintype is Tron but transaction argument does not match TronExecutionType`
             )
           }
-          const { from, to, amount } = txArgs
-          const transaction = await tronWeb.transactionBuilder.sendTrx(
-            to,
-            tronWeb.toSun(amount),
-            from
+          const { tronWeb } = window
+          const { address, functionSelector, parameter } = txArgs
+          //@ts-ignore
+          const tx = await tronWeb.transactionBuilder.triggerSmartContract(
+            //@ts-ignore
+            tronWeb?.address?.fromHex(address),
+            functionSelector,
+            {},
+            parameter
           );
-          const signedTransaction = await adapter.signTransaction(transaction);
-          const tronTxResponse = await tronWeb.trx.sendRawTransaction(signedTransaction);
-          return tronTxResponse
+          //@ts-ignore
+          const signedTx = await tronWeb.trx.sign(tx.transaction);
+          //@ts-ignore
+          const result = await tronWeb.trx.sendRawTransaction(signedTx);
+          return result
         default:
           throw new Error(`${chainType} chain type is not handeled`);
       }
     },
     [accountAddress, chainType]
   );
-
-  useEffect(() => {
-    if (window.tronWeb?.fullNode.host) {
-      const tronObj = new TronWeb({
-        fullHost: window.tronWeb.fullNode.host,
-      });
-      console.log("Tron object =>", tronObj)
-      setTronWeb(tronObj);
-    }
-  }, [window.tronWeb]);
 
   return { handleConnect, handleDisconnect, handleSendTransaction };
 };

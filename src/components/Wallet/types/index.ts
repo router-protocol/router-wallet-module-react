@@ -48,18 +48,15 @@ export function isNearExecutionType(obj: any): obj is NearExecutionType {
 }
 
 export interface TronExecutionType {
-  tronWeb?: TronWeb,
-  from: string,
-  to: string,
-  amount: number
+  address: string;
+  functionSelector: string,
+  parameter: { type: string, value: string }[],
 }
 
 export function isTronExecutionType(obj: any): obj is TronExecutionType {
   return (
-    // typeof obj?.tronWeb === TronWeb &&
-    typeof obj?.from === "string" &&
-    typeof obj?.to === "string" &&
-    typeof obj?.amount === "number"
+    typeof obj?.address === 'string' &&
+    typeof obj?.functionSelector === "string"
   )
 }
 

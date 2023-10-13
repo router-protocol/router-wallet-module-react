@@ -147,8 +147,8 @@ const HomePage = (props: Props) => {
       alert("Connect to TronLink");
       return;
     }
-    if (networkId !== "3448148188") {
-      alert("Change network to Tron Nile Testnet");
+    if (networkId !== "2494104990") {
+      alert("Change network to Tron Shashta Testnet");
       return;
     }
     if (adapter.address === receiver) {
@@ -156,9 +156,11 @@ const HomePage = (props: Props) => {
       return;
     }
     const txResponse = await handleSendTransaction({
-      from: adapter.address!,
-      to: receiver,
-      amount: 0.1,
+      address: "TY3rse72uqVB6sf85NkKZZEWPMDfffYyfU",
+      functionSelector: "balanceOf(address)",
+      parameter: [
+        { type: "address", value: window?.tronWeb?.defaultAddress?.hex! },
+      ],
     });
     console.log(`TRON tx response =>`, txResponse);
   }, [isWalletConnected, walletId, networkId, accountAddress]);
