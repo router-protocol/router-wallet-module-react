@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import WalletComponent from "../Wallet";
-import { switchNetworkInMetamask } from "../Wallet/configs/utils";
+import { switchNetworkInMetamask, switchNetworkInWeb3Auth } from "../Wallet/configs/utils";
 import {
   useAccountAddress,
   useNetworkId,
@@ -23,6 +23,7 @@ import {
 } from "../Wallet/hooks";
 import { WalletId } from "../Wallet/types";
 import { adapter } from "../Wallet/configs/utils/tron";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 type Props = {};
 
 const Wrapper = styled.div`
@@ -77,9 +78,20 @@ const HomePage = (props: Props) => {
       return;
     }
     if (networkId !== "80001") {
-      await window.walletClient.switchChain({
-        id: 80001,
-      });
+      if (walletId === WalletId.web3Auth) {
+        await switchNetworkInWeb3Auth({
+          chainId: "0x" + (80001).toString(16),
+          chainName: "Mumbai",
+          gasTicker: "MATIC",
+          gasDecimals: "18",
+          rpc: "https://rpc.ankr.com/polygon_mumbai",
+          explorer: "",
+        });
+      } else {
+        await window.walletClient.switchChain({
+          id: 43113,
+        });
+      }
       return;
     }
     const txRespone = await handleSendTransaction({

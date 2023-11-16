@@ -1,5 +1,6 @@
+import { Web3Auth } from "@web3auth/modal";
 //@ts-ignore
-import TronWeb from 'tronweb';
+import TronWeb from "tronweb";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
@@ -7,7 +8,7 @@ export interface WalletType {
   id: string;
   name: string;
   logoUri: string;
-  connector: WalletConnectConnector | InjectedConnector;
+  connector: WalletConnectConnector | InjectedConnector | Web3Auth;
 }
 
 export interface RouterExecutionType {
@@ -49,15 +50,15 @@ export function isNearExecutionType(obj: any): obj is NearExecutionType {
 
 export interface TronExecutionType {
   address: string;
-  functionSelector: string,
-  parameter: { type: string, value: string }[],
+  functionSelector: string;
+  parameter: { type: string; value: string }[];
 }
 
 export function isTronExecutionType(obj: any): obj is TronExecutionType {
   return (
-    typeof obj?.address === 'string' &&
+    typeof obj?.address === "string" &&
     typeof obj?.functionSelector === "string"
-  )
+  );
 }
 
 // from: DATA, 20 Bytes - The address the transaction is send from.
@@ -94,6 +95,7 @@ export enum WalletId {
   walletconnect = "walletconnect",
   near = "near",
   tron = "tron",
+  web3Auth = "web3Auth",
 }
 
 export enum CustomChainType {

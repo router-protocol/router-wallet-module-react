@@ -5,7 +5,7 @@ import { adapter } from "./tron";
 export const handleInjectedConnection = async (wallet: WalletType) => {
   try {
     await wallet.connector.connect();
-
+    //@ts-ignore
     const _walletClient = await wallet.connector.getWalletClient();
 
     const _address = (await _walletClient.getAddresses())[0];

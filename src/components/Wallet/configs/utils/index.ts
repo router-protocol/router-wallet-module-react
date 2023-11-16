@@ -3,6 +3,7 @@ import { CURRENT_NETWORK_METAMASK_CONFIG } from "../constants";
 
 export * from "./injected";
 export * from "./near";
+export * from "./web3-auth";
 
 export function shortenAddress(address: string, chars = 8): string {
   return `${address.substring(0, chars + 2)}...${address.substring(
