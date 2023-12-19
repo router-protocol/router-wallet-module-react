@@ -1,5 +1,9 @@
 import { WalletId } from "../types";
-import { injectedConnector, walletConnectConnector } from "./connectors";
+import {
+  injectedConnector,
+  walletConnectConnector,
+  web3AuthConnector,
+} from "./connectors";
 
 export const walletConfigs = [
   {
@@ -24,5 +28,17 @@ export const walletConfigs = [
     logoUri: "https://cryptologos.cc/logos/near-protocol-near-logo.svg?v=025",
     // Putting injectedConnector here, but has no significance
     connector: injectedConnector,
+  },
+  {
+    id: WalletId.tron,
+    name: "TronLink",
+    logoUri: "/tron_logo.svg",
+    connector: injectedConnector,
+  },
+  {
+    id: WalletId.web3Auth,
+    name: "Web3 Auth",
+    logoUri: "/tron_logo.svg",
+    connector: web3AuthConnector,
   },
 ];

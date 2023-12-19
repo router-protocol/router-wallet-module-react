@@ -1,10 +1,11 @@
 import { checkIfRouterChainId } from ".";
 import { CustomChainType, WalletId, WalletType } from "../../types";
+import { adapter } from "./tron";
 
 export const handleInjectedConnection = async (wallet: WalletType) => {
   try {
     await wallet.connector.connect();
-
+    //@ts-ignore
     const _walletClient = await wallet.connector.getWalletClient();
 
     const _address = (await _walletClient.getAddresses())[0];
@@ -53,6 +54,23 @@ export const subscribeInjectedWallet = ({
           setChainType(CustomChainType.ethereum);
         }
       }
+    });
+  } else if (id === WalletId.tron) {
+    adapter.on("connect", () => {
+      console.log(`TRON address ${adapter.address}`);
+      setAccountAddress(adapter.address!);
+    });
+    adapter.on("accountsChanged", () => {
+      if (adapter.address) {
+        console.log(`TRON account changed ${adapter.address}`);
+        setAccountAddress(adapter.address!);
+      }
+    });
+    adapter.on("chainChanged", async () => {
+      const network = await adapter.network();
+      setNetworkId(parseInt(network.chainId, 16).toString());
+      setChainType(CustomChainType.tron);
+      console.log(`TRON chain changed ${network.chainId}`);
     });
   }
 };

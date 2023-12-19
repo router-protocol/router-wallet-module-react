@@ -1,10 +1,19 @@
 "use client";
-import { getDataRaw, getNearExecutionArgs, getRouterExecutionArgs } from "@/utils";
-import { PING_PONG_ADDRESS, ROUTER_COSMOS_CHAIN_ID, ROUTER_ETH_CHAIN_ID, ROUTER_LCD } from "@/utils/constants";
-import React, { useCallback } from "react";
+import {
+  getDataRaw,
+  getNearExecutionArgs,
+  getRouterExecutionArgs,
+} from "@/utils";
+import {
+  PING_PONG_ADDRESS,
+  ROUTER_COSMOS_CHAIN_ID,
+  ROUTER_ETH_CHAIN_ID,
+  ROUTER_LCD,
+} from "@/utils/constants";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import WalletComponent from "../Wallet";
-import { switchNetworkInMetamask } from "../Wallet/configs/utils";
+import { switchNetworkInMetamask, switchNetworkInWeb3Auth } from "../Wallet/configs/utils";
 import {
   useAccountAddress,
   useNetworkId,
@@ -13,6 +22,8 @@ import {
   useWallets,
 } from "../Wallet/hooks";
 import { WalletId } from "../Wallet/types";
+import { adapter } from "../Wallet/configs/utils/tron";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 type Props = {};
 
 const Wrapper = styled.div`
@@ -67,9 +78,20 @@ const HomePage = (props: Props) => {
       return;
     }
     if (networkId !== "80001") {
-      await window.walletClient.switchChain({
-        id: 80001,
-      });
+      if (walletId === WalletId.web3Auth) {
+        await switchNetworkInWeb3Auth({
+          chainId: "0x" + (80001).toString(16),
+          chainName: "Mumbai",
+          gasTicker: "MATIC",
+          gasDecimals: "18",
+          rpc: "https://rpc.ankr.com/polygon_mumbai",
+          explorer: "",
+        });
+      } else {
+        await window.walletClient.switchChain({
+          id: 43113,
+        });
+      }
       return;
     }
     const txRespone = await handleSendTransaction({
@@ -105,7 +127,7 @@ const HomePage = (props: Props) => {
     console.log("txResponse router=>", txResponse);
   }, [isWalletConnected, walletId, networkId, accountAddress]);
 
-  const handleNearTx = useCallback(async() => {
+  const handleNearTx = useCallback(async () => {
     if (!isWalletConnected) {
       alert("Connect Wallet");
       return;
@@ -127,6 +149,38 @@ const HomePage = (props: Props) => {
     console.log("txResponse near=>", txResponse);
   }, [isWalletConnected, walletId, networkId, accountAddress]);
 
+  const handleTronTx = useCallback(async () => {
+    const receiver: string = "TFUEuZhTtJJb5KYvzFJQyoyEMcwUnSLQHF";
+    if (!isWalletConnected) {
+      alert("Connect Wallet");
+      return;
+    }
+    if (walletId !== WalletId.tron) {
+      alert("Connect to TronLink");
+      return;
+    }
+    if (networkId !== "2494104990") {
+      alert("Change network to Tron Shashta Testnet");
+      return;
+    }
+    if (adapter.address === receiver) {
+      alert("Sender and receiver cannot be same");
+      return;
+    }
+    const txResponse = await handleSendTransaction({
+      address: "TY3rse72uqVB6sf85NkKZZEWPMDfffYyfU",
+      functionSelector: "balanceOf(address)",
+      parameter: [
+        { type: "address", value: window?.tronWeb?.defaultAddress?.hex! },
+      ],
+    });
+    console.log(`TRON tx response =>`, txResponse);
+  }, [isWalletConnected, walletId, networkId, accountAddress]);
+
+  useEffect(() => {
+    console.log("Network ID => ", networkId);
+  }, [networkId]);
+
   return (
     <Wrapper>
       <Header>
@@ -142,6 +196,9 @@ const HomePage = (props: Props) => {
           </InteractiveButton>
           <InteractiveButton onClick={handleNearTx}>
             Near Chain
+          </InteractiveButton>
+          <InteractiveButton onClick={handleTronTx}>
+            Tron Chain
           </InteractiveButton>
         </InteractiveButtonWrapper>
       </ContentWrapper>

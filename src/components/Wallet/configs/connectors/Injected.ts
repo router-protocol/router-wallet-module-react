@@ -1,3 +1,4 @@
+import { TronLinkAdapter } from "@tronweb3/tronwallet-adapters";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 const GetInjectedProviders = () => {
@@ -10,6 +11,10 @@ const GetInjectedProviders = () => {
     }
     if (window.cosmostation) {
       return window.cosmostation.ethereum;
+    }
+    if(window.tronWeb) {
+      const adapter = new TronLinkAdapter()
+      return adapter;
     }
     return undefined;
   }

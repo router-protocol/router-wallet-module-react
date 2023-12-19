@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   useAccountAddress,
   useChainType,
@@ -12,8 +12,10 @@ import {
   isEthereumSendTransactionArgs,
   isNearExecutionType,
   isRouterExecutionType,
+  isTronExecutionType,
   NearExecutionType,
   RouterExecutionType,
+  TronExecutionType,
   WalletId,
   WalletType,
 } from "../types";
@@ -21,9 +23,12 @@ import { executeQueryInjected } from "@routerprotocol/router-chain-sdk-ts";
 import {
   handleInjectedConnection,
   handleNearConnection,
+  handleWeb3AuthConnection,
   subscribeInjectedWallet,
 } from "../configs/utils";
 import { nearNetworkConfig } from "../configs/nearConfig";
+import { adapter, handleTronConnection } from "../configs/utils/tron";
+import { ethers } from "ethers";
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -58,6 +63,20 @@ export const useWallets = () => {
             contractId: nearNetworkConfig.contractId,
           });
           break;
+        case WalletId.tron:
+          connectionResponse = await handleTronConnection(wallet);
+          subscribeInjectedWallet({
+            wallet,
+            setAccountAddress,
+            setNetworkId,
+            setChainType,
+          });
+          break;
+        case WalletId.web3Auth:
+          //@ts-ignore
+          await wallet.connector.initModal();
+          connectionResponse = await handleWeb3AuthConnection(wallet);
+          break;
       }
       //After successfull connection setting global states
       console.log("connectionResponse =>", connectionResponse);
@@ -89,7 +108,15 @@ export const useWallets = () => {
           case WalletId.near:
             await walletClient.signOut();
             break;
+          case WalletId.tron:
+            await adapter.disconnect();
+            break;
+          case WalletId.web3Auth:
+            //@ts-ignore
+            await wallet.connector.logout();
+            break;
           default:
+            //@ts-ignore
             await wallet.connector.disconnect();
         }
         setAccountAddress("");
@@ -110,8 +137,10 @@ export const useWallets = () => {
         | RouterExecutionType
         | EthereumSendTransactionArgs
         | NearExecutionType
+        | TronExecutionType
     ) => {
       const { walletClient } = window;
+      console.log("chainType", chainType);
       switch (chainType) {
         case CustomChainType.ethereum:
           if (!isEthereumSendTransactionArgs(txArgs)) {
@@ -119,15 +148,21 @@ export const useWallets = () => {
               `Chaintype is ethereum but transaction argument does not match EthereumSendTransactionArgs`
             );
           }
-          const evmTxResponse = await walletClient.request({
-            method: "eth_sendTransaction",
-            params: [
-              {
-                ...txArgs,
-              },
-            ],
-          });
-          return evmTxResponse;
+          console.log("txArgs", txArgs);
+          try {
+            const evmTxResponse = await walletClient.request({
+              method: "eth_sendTransaction",
+              params: [
+                {
+                  ...txArgs,
+                },
+              ],
+            });
+            return evmTxResponse;
+          } catch (e) {
+            console.log(e);
+            return;
+          }
         case CustomChainType.router:
           if (!isRouterExecutionType(txArgs)) {
             throw new Error(
@@ -189,6 +224,27 @@ export const useWallets = () => {
             ],
           });
           return nearTxResponse;
+        case CustomChainType.tron:
+          if (!isTronExecutionType(txArgs)) {
+            throw new Error(
+              `Chaintype is Tron but transaction argument does not match TronExecutionType`
+            );
+          }
+          const { tronWeb } = window;
+          const { address, functionSelector, parameter } = txArgs;
+          //@ts-ignore
+          const tx = await tronWeb.transactionBuilder.triggerSmartContract(
+            //@ts-ignore
+            tronWeb?.address?.fromHex(address),
+            functionSelector,
+            {},
+            parameter
+          );
+          //@ts-ignore
+          const signedTx = await tronWeb.trx.sign(tx.transaction);
+          //@ts-ignore
+          const result = await tronWeb.trx.sendRawTransaction(signedTx);
+          return result;
         default:
           throw new Error(`${chainType} chain type is not handeled`);
       }
