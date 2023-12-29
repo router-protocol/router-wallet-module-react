@@ -41,4 +41,10 @@ export const walletConfigs = [
     logoUri: "/tron_logo.svg",
     connector: web3AuthConnector,
   },
+  {
+    id: WalletId.keplr,
+    name: "Keplr Wallet",
+    logoUri: "/keplr_logo.svg",
+    connector: injectedConnector,
+  },
 ];

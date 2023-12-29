@@ -1,4 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
+import { executeQueryInjected } from "@routerprotocol/router-chain-sdk-ts";
+import { useCallback } from "react";
+import { nearNetworkConfig } from "../configs/nearConfig";
+import {
+  handleInjectedConnection,
+  handleNearConnection,
+  handleWeb3AuthConnection,
+  subscribeInjectedWallet,
+} from "../configs/utils";
+import { handleOsmosisConnection } from "../configs/utils/osmosis";
+import { adapter, handleTronConnection } from "../configs/utils/tron";
+import {
+  CustomChainType,
+  EthereumSendTransactionArgs,
+  NearExecutionType,
+  OsmosisExecutionType,
+  RouterExecutionType,
+  TronExecutionType,
+  WalletId,
+  WalletType,
+  isEthereumSendTransactionArgs,
+  isNearExecutionType,
+  isOsmosisExecutionType,
+  isRouterExecutionType,
+  isTronExecutionType,
+} from "../types";
 import {
   useAccountAddress,
   useChainType,
@@ -6,29 +31,9 @@ import {
   useWalletConnected,
   useWalletId,
 } from "./";
-import {
-  CustomChainType,
-  EthereumSendTransactionArgs,
-  isEthereumSendTransactionArgs,
-  isNearExecutionType,
-  isRouterExecutionType,
-  isTronExecutionType,
-  NearExecutionType,
-  RouterExecutionType,
-  TronExecutionType,
-  WalletId,
-  WalletType,
-} from "../types";
-import { executeQueryInjected } from "@routerprotocol/router-chain-sdk-ts";
-import {
-  handleInjectedConnection,
-  handleNearConnection,
-  handleWeb3AuthConnection,
-  subscribeInjectedWallet,
-} from "../configs/utils";
-import { nearNetworkConfig } from "../configs/nearConfig";
-import { adapter, handleTronConnection } from "../configs/utils/tron";
-import { ethers } from "ethers";
+import { OsmosisChainInfo } from "@/utils/OsmosisChainInfo";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { Coin, GasPrice } from "@cosmjs/stargate";
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -76,6 +81,15 @@ export const useWallets = () => {
           //@ts-ignore
           await wallet.connector.initModal();
           connectionResponse = await handleWeb3AuthConnection(wallet);
+          break;
+        case WalletId.keplr:
+          connectionResponse = await handleOsmosisConnection(wallet);
+          subscribeInjectedWallet({
+            wallet,
+            setAccountAddress,
+            setNetworkId,
+            setChainType,
+          });
           break;
       }
       //After successfull connection setting global states
@@ -138,6 +152,7 @@ export const useWallets = () => {
         | EthereumSendTransactionArgs
         | NearExecutionType
         | TronExecutionType
+        | OsmosisExecutionType
     ) => {
       const { walletClient } = window;
       console.log("chainType", chainType);
@@ -245,6 +260,34 @@ export const useWallets = () => {
           //@ts-ignore
           const result = await tronWeb.trx.sendRawTransaction(signedTx);
           return result;
+        case CustomChainType.cosmos:
+          if (!isOsmosisExecutionType(txArgs)) {
+            throw new Error(
+              `Chaintype is Osmosis but transaction argument does not match OsmosisExecutionType`
+            );
+          }
+
+          const { contractAddress, message, fee, fund } = txArgs
+          //@ts-ignore
+          const offlineSigner = window.getOfflineSigner(OsmosisChainInfo.chainId)
+
+          const signingClient = await SigningCosmWasmClient.connectWithSigner(
+            OsmosisChainInfo.rpc,
+            offlineSigner,
+            {
+              gasPrice: GasPrice.fromString("0.025uosmo"),
+            }
+          );
+          const txResponse = await signingClient.execute(
+            accountAddress,
+            contractAddress,
+            message,
+            fee,
+            undefined,
+            fund
+          )
+
+          return txResponse
         default:
           throw new Error(`${chainType} chain type is not handeled`);
       }

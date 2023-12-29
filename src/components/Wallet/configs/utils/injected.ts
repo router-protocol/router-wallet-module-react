@@ -72,5 +72,17 @@ export const subscribeInjectedWallet = ({
       setChainType(CustomChainType.tron);
       console.log(`TRON chain changed ${network.chainId}`);
     });
+  } else if (id === WalletId.keplr) {
+    connector.on('change', ({ chain, account }) => {
+      if (account) {
+        console.log(`Account Changed`);
+        setAccountAddress(account);
+      }
+      if (chain) {
+        console.log("Chain Changed");
+        setNetworkId(chain.id.toString())
+        setChainType(CustomChainType.cosmos)
+      }
+    })
   }
 };

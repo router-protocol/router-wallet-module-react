@@ -1,3 +1,4 @@
+import { Coin, type StdFee } from "@cosmjs/stargate";
 import { Web3Auth } from "@web3auth/modal";
 //@ts-ignore
 import TronWeb from "tronweb";
@@ -61,6 +62,20 @@ export function isTronExecutionType(obj: any): obj is TronExecutionType {
   );
 }
 
+export interface OsmosisExecutionType {
+  contractAddress: string;
+  message: any;
+  fee: number | StdFee | "auto";
+  memo?: string;
+  fund?: Coin[]
+}
+
+export function isOsmosisExecutionType(obj: any): obj is OsmosisExecutionType {
+  return (
+    typeof obj.contractAddress === "string"
+  )
+}
+
 // from: DATA, 20 Bytes - The address the transaction is send from.
 // to: DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
 // gas: QUANTITY - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
@@ -96,6 +111,7 @@ export enum WalletId {
   near = "near",
   tron = "tron",
   web3Auth = "web3Auth",
+  keplr = "keplr"
 }
 
 export enum CustomChainType {
@@ -103,4 +119,5 @@ export enum CustomChainType {
   near = "near",
   router = "router",
   tron = "tron",
+  cosmos = "cosmos",
 }

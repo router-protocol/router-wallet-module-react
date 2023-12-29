@@ -15,6 +15,7 @@ const WalletListContainer = styled.div`
   color: white;
   background-color: #161622;
   border-radius: 12px;
+  overflow-y: auto;
   @media only screen and (max-width: 600px) {
     height: 400px;
     max-width: 320px;
@@ -42,7 +43,6 @@ const Title = styled.div`
 const WalletListWrapper = styled.div`
   overflow: hidden;
   width: 100%;
-  overflow-y: scroll;
   margin-top: 1rem;
   padding: 0 20px;
 `;

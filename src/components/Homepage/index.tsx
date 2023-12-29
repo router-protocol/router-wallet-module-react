@@ -13,7 +13,10 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import WalletComponent from "../Wallet";
-import { switchNetworkInMetamask, switchNetworkInWeb3Auth } from "../Wallet/configs/utils";
+import {
+  switchNetworkInMetamask,
+  switchNetworkInWeb3Auth,
+} from "../Wallet/configs/utils";
 import {
   useAccountAddress,
   useNetworkId,
@@ -24,6 +27,7 @@ import {
 import { WalletId } from "../Wallet/types";
 import { adapter } from "../Wallet/configs/utils/tron";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { OsmosisChainInfo } from "@/utils/OsmosisChainInfo";
 type Props = {};
 
 const Wrapper = styled.div`
@@ -177,9 +181,46 @@ const HomePage = (props: Props) => {
     console.log(`TRON tx response =>`, txResponse);
   }, [isWalletConnected, walletId, networkId, accountAddress]);
 
-  useEffect(() => {
-    console.log("Network ID => ", networkId);
-  }, [networkId]);
+  const handleOsmosisTx = useCallback(async () => {
+    if (walletId !== WalletId.keplr) {
+      console.log("WalletId - ", walletId);
+      alert("Connect to Keplr wallet");
+      return;
+    }
+    if (networkId !== OsmosisChainInfo.chainId) {
+      console.log("NetworkId - ", networkId);
+      alert("Change network to Osmosis Testnet");
+      return;
+    }
+    const response = await handleSendTransaction({
+      // contractAddress:
+      //   "osmo1seycyux492p7msueqa9pyacw8gre2ufgzdmndsetc96tlv3kmw5srcnfrj",
+      // message: {
+      //   i_deposit_message: {
+      //     amount: "1200",
+      //     dest_amount: "1000",
+      //     dest_chain_id: "80001",
+      //     dest_token: "0x22baa8b6cdd31a0c5d1035d6e72043f4ce6af054",
+      //     message: "bmF0aXZl",
+      //     partner_id: "1",
+      //     recipient: "0xa102A5809ef1707e749c14cfDD901AFb4BBeF03d",
+      //     src_token:
+      //       "osmo1wpahf5cuy6yzzmmrkdc0xv2ta95wzfj2lk0jpyvtumq9qrfq3q8sse0r2e",
+      //   },
+      // },
+      contractAddress:
+        "osmo1wpahf5cuy6yzzmmrkdc0xv2ta95wzfj2lk0jpyvtumq9qrfq3q8sse0r2e",
+      message: {
+        increase_allowance: {
+          amount: "12000000",
+          spender:
+            "osmo1seycyux492p7msueqa9pyacw8gre2ufgzdmndsetc96tlv3kmw5srcnfrj",
+        },
+      },
+      fee: "auto",
+    });
+    console.log("Osmosis tx repsonse => ", response);
+  }, []);
 
   return (
     <Wrapper>
@@ -199,6 +240,9 @@ const HomePage = (props: Props) => {
           </InteractiveButton>
           <InteractiveButton onClick={handleTronTx}>
             Tron Chain
+          </InteractiveButton>
+          <InteractiveButton onClick={handleOsmosisTx}>
+            Osmosis Chain
           </InteractiveButton>
         </InteractiveButtonWrapper>
       </ContentWrapper>

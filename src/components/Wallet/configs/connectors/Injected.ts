@@ -12,9 +12,12 @@ const GetInjectedProviders = () => {
     if (window.cosmostation) {
       return window.cosmostation.ethereum;
     }
-    if(window.tronWeb) {
+    if (window.tronWeb) {
       const adapter = new TronLinkAdapter()
       return adapter;
+    }
+    if ((window as any).keplr) {
+      return (window as any).keplr
     }
     return undefined;
   }
