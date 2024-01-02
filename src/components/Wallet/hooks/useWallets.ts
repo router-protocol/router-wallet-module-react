@@ -1,3 +1,6 @@
+import { OsmosisChainInfo } from "@/utils/OsmosisChainInfo";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { GasPrice } from "@cosmjs/stargate";
 import { executeQueryInjected } from "@routerprotocol/router-chain-sdk-ts";
 import { useCallback } from "react";
 import { nearNetworkConfig } from "../configs/nearConfig";
@@ -31,9 +34,6 @@ import {
   useWalletConnected,
   useWalletId,
 } from "./";
-import { OsmosisChainInfo } from "@/utils/OsmosisChainInfo";
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { Coin, GasPrice } from "@cosmjs/stargate";
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -268,6 +268,7 @@ export const useWallets = () => {
           }
 
           const { contractAddress, message, fee, fund } = txArgs
+
           //@ts-ignore
           const offlineSigner = window.getOfflineSigner(OsmosisChainInfo.chainId)
 

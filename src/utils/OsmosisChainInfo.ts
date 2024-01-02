@@ -4,9 +4,9 @@ export const OsmosisChainInfo = {
     // The name of the chain to be displayed to the user.
     chainName: "Osmosis Testnet",
     // RPC endpoint of the chain. In this case we are using blockapsis, as it's accepts connections from any host currently. No Cors limitations.
-    rpc: "https://rpc.osmotest5.osmosis.zone",
+    rpc: "https://rpc.testnet.osmosis.zone",
     // REST endpoint of the chain.
-    rest: "https://lcd.osmotest5.osmosis.zone",
+    rest: "https://lcd.testnet.osmosis.zone",
     // Staking coin information
     stakeCurrency: {
         // Coin denomination to be displayed to the user.
