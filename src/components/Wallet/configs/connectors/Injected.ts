@@ -27,3 +27,21 @@ export const injectedConnector = new InjectedConnector({
     getProvider: GetInjectedProviders,
   },
 });
+
+const GetStarknetProviders = () => {
+  if (typeof window !== "undefined") {
+    if ((typeof window as any).starknet_argentX) {
+      return (typeof window as any).starknet_argentX;
+    }
+    return undefined;
+  }
+  return undefined;
+};
+
+export const starknetConnector = new InjectedConnector({
+  options: {
+    name: "Starknet Wallet",
+    //@ts-ignore
+    getProvider: GetStarknetProviders,
+  },
+});

@@ -12,9 +12,11 @@ import {
   isEthereumSendTransactionArgs,
   isNearExecutionType,
   isRouterExecutionType,
+  isStarknetExecutionType,
   isTronExecutionType,
   NearExecutionType,
   RouterExecutionType,
+  StarknetExecutionType,
   TronExecutionType,
   WalletId,
   WalletType,
@@ -29,6 +31,11 @@ import {
 import { nearNetworkConfig } from "../configs/nearConfig";
 import { adapter, handleTronConnection } from "../configs/utils/tron";
 import { ethers } from "ethers";
+import {
+  handleStarknetConnection,
+  handleStarknetDisconnection,
+  sendTransactionToStarknet,
+} from "../configs/utils/starknet";
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -77,6 +84,15 @@ export const useWallets = () => {
           await wallet.connector.initModal();
           connectionResponse = await handleWeb3AuthConnection(wallet);
           break;
+        case WalletId.starknet:
+          connectionResponse = await handleStarknetConnection(wallet);
+          subscribeInjectedWallet({
+            wallet,
+            setAccountAddress,
+            setNetworkId,
+            setChainType,
+          });
+          break;
       }
       //After successfull connection setting global states
       console.log("connectionResponse =>", connectionResponse);
@@ -115,6 +131,9 @@ export const useWallets = () => {
             //@ts-ignore
             await wallet.connector.logout();
             break;
+          case WalletId.starknet:
+            await handleStarknetDisconnection();
+            break;
           default:
             //@ts-ignore
             await wallet.connector.disconnect();
@@ -138,6 +157,7 @@ export const useWallets = () => {
         | EthereumSendTransactionArgs
         | NearExecutionType
         | TronExecutionType
+        | StarknetExecutionType
     ) => {
       const { walletClient } = window;
       console.log("chainType", chainType);
@@ -245,6 +265,18 @@ export const useWallets = () => {
           //@ts-ignore
           const result = await tronWeb.trx.sendRawTransaction(signedTx);
           return result;
+        case CustomChainType.starknet:
+          if (!isStarknetExecutionType(txArgs)) {
+            throw new Error(
+              `Chaintype is Starknet but transaction argument does not match StarknetExecutionType`
+            );
+          }
+          const txhash = await sendTransactionToStarknet(
+            txArgs.address,
+            txArgs.functionSelector,
+            txArgs.params
+          );
+          return txhash;          
         default:
           throw new Error(`${chainType} chain type is not handeled`);
       }

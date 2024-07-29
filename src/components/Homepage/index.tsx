@@ -177,6 +177,28 @@ const HomePage = (props: Props) => {
     console.log(`TRON tx response =>`, txResponse);
   }, [isWalletConnected, walletId, networkId, accountAddress]);
 
+  const handleStarknetTx  = useCallback(async () => {
+    if(!isWalletConnected) {
+      alert("Connect to wallet");
+      return;
+    }
+    if(walletId !== WalletId.starknet) {
+      alert("Connect to argentx wallet");
+      return;
+    }
+    if(networkId !== "SN_SEPOLIA") {
+      alert("Change network to Starknet Sepolia");
+      return;
+    }
+    const testContractAddress = "0x02d2a4804f83c34227314dba41d5c2f8a546a500d34e30bb5078fd36b5af2d77";
+    const txhash = await handleSendTransaction({
+      address: testContractAddress,
+      functionSelector: "increase_balance",
+      params: { amount: 1 }
+    })
+    console.log("txhash - ", txhash)
+  }, [isWalletConnected, walletId, networkId, accountAddress])
+
   useEffect(() => {
     console.log("Network ID => ", networkId);
   }, [networkId]);
@@ -199,6 +221,9 @@ const HomePage = (props: Props) => {
           </InteractiveButton>
           <InteractiveButton onClick={handleTronTx}>
             Tron Chain
+          </InteractiveButton>
+          <InteractiveButton onClick={handleStarknetTx}>
+            Starknet Chain
           </InteractiveButton>
         </InteractiveButtonWrapper>
       </ContentWrapper>
