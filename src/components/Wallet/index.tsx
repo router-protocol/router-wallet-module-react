@@ -20,6 +20,7 @@ declare global {
     ethereum: any;
     frontier: any;
     cosmostation: any;
+    CasperWalletProvider: any;
   }
 }
 

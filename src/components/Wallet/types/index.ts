@@ -61,6 +61,25 @@ export function isTronExecutionType(obj: any): obj is TronExecutionType {
   );
 }
 
+export interface CasperExecutionType {
+  contractAddress: string;
+  functionSelector: string;
+  publicKey: string;
+  params: string;
+  amount: number;
+}
+
+export function isCasperExecutionType(obj: any): obj is CasperExecutionType {
+  return (
+    typeof obj?.contractAddress === "string" &&
+    typeof obj?.functionSelector === "string" &&
+    typeof obj?.publicKey === "string" &&
+    typeof obj?.params === "string" &&
+    typeof obj?.amount === "number"
+  );
+}
+
+
 // from: DATA, 20 Bytes - The address the transaction is send from.
 // to: DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
 // gas: QUANTITY - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
@@ -96,6 +115,7 @@ export enum WalletId {
   near = "near",
   tron = "tron",
   web3Auth = "web3Auth",
+  casper = "casper",
 }
 
 export enum CustomChainType {
@@ -103,4 +123,5 @@ export enum CustomChainType {
   near = "near",
   router = "router",
   tron = "tron",
+  casper = "casper",
 }

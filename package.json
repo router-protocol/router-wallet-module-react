@@ -24,6 +24,8 @@
     "@types/react-dom": "18.2.4",
     "@web3auth/base": "^7.1.0",
     "@web3auth/modal": "^7.1.1",
+    "axios": "^1.7.3",
+    "casper-js-sdk": "^2.15.5",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
     "ethers": "5.7.2",

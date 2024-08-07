@@ -27,3 +27,20 @@ export const injectedConnector = new InjectedConnector({
     getProvider: GetInjectedProviders,
   },
 });
+
+const GetCasperWalletProvider = () => {
+  if (typeof window !== "undefined") {
+    if ((typeof window as any).CasperWalletProvider) {
+      return (typeof window as any).CasperWalletProvider;
+    }
+    return undefined;
+  }
+  return undefined;
+};
+
+export const casperConnector = new InjectedConnector({
+  options: {
+    name: "Casper Wallet",
+    getProvider: GetCasperWalletProvider,
+  },
+});

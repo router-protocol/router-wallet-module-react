@@ -177,6 +177,29 @@ const HomePage = (props: Props) => {
     console.log(`TRON tx response =>`, txResponse);
   }, [isWalletConnected, walletId, networkId, accountAddress]);
 
+  const handleCasperTx = useCallback(async () => {
+    if (!isWalletConnected) {
+      alert("Connect Wallet");
+      return;
+    }
+    if (walletId !== WalletId.casper) {
+      alert("Connect to Casper Wallet");
+      return;
+    }
+    if (networkId !== "casper-test") {
+      alert("Connect to Casper Testnet");
+      return;
+    }
+    const txResponse = await handleSendTransaction({
+      contractAddress: "hash-75143aa708275b7dead20ac2cc06c1c3eccff4ffcf1eb9aebb8cce7c35cea041",
+      functionSelector: "update_message",
+      publicKey: accountAddress,
+      params: "Hello",
+      amount: 100,
+    });
+    console.log("txResponse casper =>", txResponse);
+  }, [isWalletConnected, walletId, networkId, accountAddress]);
+
   useEffect(() => {
     console.log("Network ID => ", networkId);
   }, [networkId]);
@@ -199,6 +222,9 @@ const HomePage = (props: Props) => {
           </InteractiveButton>
           <InteractiveButton onClick={handleTronTx}>
             Tron Chain
+          </InteractiveButton>
+          <InteractiveButton onClick={handleCasperTx}>
+            Casper Chain
           </InteractiveButton>
         </InteractiveButtonWrapper>
       </ContentWrapper>

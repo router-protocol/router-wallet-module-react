@@ -7,8 +7,10 @@ import {
   useWalletId,
 } from "./";
 import {
+  CasperExecutionType,
   CustomChainType,
   EthereumSendTransactionArgs,
+  isCasperExecutionType,
   isEthereumSendTransactionArgs,
   isNearExecutionType,
   isRouterExecutionType,
@@ -29,6 +31,7 @@ import {
 import { nearNetworkConfig } from "../configs/nearConfig";
 import { adapter, handleTronConnection } from "../configs/utils/tron";
 import { ethers } from "ethers";
+import { disconnectCasperWallet, handleCasperConnection, signAndDeploy } from "../configs/connectors/casperWallet";
 
 export const useWallets = () => {
   const [accountAddress, setAccountAddress] = useAccountAddress();
@@ -77,6 +80,15 @@ export const useWallets = () => {
           await wallet.connector.initModal();
           connectionResponse = await handleWeb3AuthConnection(wallet);
           break;
+        case WalletId.casper:
+          connectionResponse = await handleCasperConnection(wallet);
+          subscribeInjectedWallet({
+            wallet,
+            setAccountAddress,
+            setNetworkId,
+            setChainType,
+          });
+          break;
       }
       //After successfull connection setting global states
       console.log("connectionResponse =>", connectionResponse);
@@ -115,6 +127,9 @@ export const useWallets = () => {
             //@ts-ignore
             await wallet.connector.logout();
             break;
+          case WalletId.casper:
+            await disconnectCasperWallet();
+            break;
           default:
             //@ts-ignore
             await wallet.connector.disconnect();
@@ -138,6 +153,7 @@ export const useWallets = () => {
         | EthereumSendTransactionArgs
         | NearExecutionType
         | TronExecutionType
+        | CasperExecutionType
     ) => {
       const { walletClient } = window;
       console.log("chainType", chainType);
@@ -245,6 +261,22 @@ export const useWallets = () => {
           //@ts-ignore
           const result = await tronWeb.trx.sendRawTransaction(signedTx);
           return result;
+        case CustomChainType.casper:
+          if(!isCasperExecutionType(txArgs)) {
+            throw new Error(
+              `Chaintype is Casper but transaction argument does not match CasperExecutionType`
+            )
+          }
+          const {contractAddress, functionSelector: functionName, publicKey, params, amount} = txArgs;
+          const casperTxResponse = await signAndDeploy(
+            contractAddress,
+            functionName,
+            publicKey,
+            params,
+            amount
+          );
+          console.log("casperTxResponse =>", casperTxResponse);
+          return casperTxResponse;
         default:
           throw new Error(`${chainType} chain type is not handeled`);
       }
